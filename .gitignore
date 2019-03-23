@@ -1,0 +1,4 @@
+.vscode
+.pytest_cache
+settings_local.py
+.coverage
