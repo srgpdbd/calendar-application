@@ -37,8 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_auth',
+    'rest_auth.registration',
+    'corsheaders',
 
     'todo',
 ]
@@ -46,6 +51,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -54,6 +60,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'calendar_application.urls'
+
+SITE_ID = 1
 
 TEMPLATES = [
     {
