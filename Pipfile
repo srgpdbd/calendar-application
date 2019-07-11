@@ -17,6 +17,7 @@ coverage = "*"
 django-cors-headers = "*"
 django-rest-auth = "*"
 django-allauth = "*"
+django-rest-swagger = "*"
 
 [requires]
 python_version = "3.7"
