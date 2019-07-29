@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'corsheaders',
     'rest_framework_swagger',
+    'graphene_django',
 
     'todo',
     'users',
@@ -136,9 +137,15 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',  # <-- And here
+        'rest_framework.authentication.TokenAuthentication',
     ],
 }
 
@@ -151,3 +158,11 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
+
+
+GRAPHENE = {
+    'SCHEMA': 'calendar_application.schema.schema',
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
+}
