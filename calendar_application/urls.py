@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework_swagger.views import get_swagger_view
-from graphene_django.views import GraphQLView
+from core.views import CustomGraphQLView
 
 
 schema_view = get_swagger_view(title='Pastebin API')
@@ -26,5 +26,5 @@ urlpatterns = [
     path('', schema_view),
     path('admin/', admin.site.urls),
     path('api/', include('calendar_application.api_urls')),
-    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path('graphql/', csrf_exempt(CustomGraphQLView.as_view(graphiql=True))),
 ]

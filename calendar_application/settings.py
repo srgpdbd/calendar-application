@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_swagger',
     'graphene_django',
+    'graphql_jwt',
 
     'todo',
     'users',

@@ -1,5 +1,6 @@
 from graphene_django import DjangoObjectType
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 import graphene
 import graphql_jwt
 
@@ -20,3 +21,26 @@ class UsersQuery(graphene.ObjectType):
 
     def resolve_users(self, info):
         return User.objects.all()
+
+
+class RegisterMutation(graphene.Mutation):
+
+    class Arguments:
+        username = graphene.String(required=True)
+        email = graphene.String(required=True)
+        password1 = graphene.String(required=True)
+        password2 = graphene.String(required=True)
+
+    success = graphene.String()
+
+    def mutate(self, info, username, email, password1, password2):
+        if password1 == password2:
+            user = User.objects.create(email=email, username=username)
+            user.set_password(password1)
+            return RegisterMutation(success=True)
+        else:
+            raise ValidationError('Passwords do not match')
+
+
+class RegisterObjectsType(graphene.ObjectType):
+    register = RegisterMutation().Field()

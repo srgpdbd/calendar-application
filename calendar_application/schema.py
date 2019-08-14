@@ -3,7 +3,7 @@ import graphene
 from graphene_django.debug import DjangoDebug
 
 from todo.schema import ToDoQuery
-from users.schema import UsersQuery, AuthMutation
+from users.schema import UsersQuery, AuthMutation, RegisterObjectsType
 
 
 class RootQuery(ToDoQuery, UsersQuery, graphene.ObjectType):
@@ -13,10 +13,12 @@ class RootQuery(ToDoQuery, UsersQuery, graphene.ObjectType):
         debug = graphene.Field(DjangoDebug, name='__debug')
 
 
-class RootMutation(AuthMutation, graphene.ObjectType):
+class RootMutation(
+    AuthMutation,
+    RegisterObjectsType,
+    graphene.ObjectType,
+):
     pass
-
-# TODO: same for mutations, I need to create root mutation
 
 
 schema = graphene.Schema(query=RootQuery, mutation=RootMutation)
