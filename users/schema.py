@@ -1,6 +1,7 @@
 from graphene_django import DjangoObjectType
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from graphql.error import GraphQLError
 import graphene
 import graphql_jwt
 
@@ -9,6 +10,7 @@ class AuthMutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
+    revoke_token = graphql_jwt.Revoke.Field()
 
 
 class UserObjectType(DjangoObjectType):
@@ -35,8 +37,13 @@ class RegisterMutation(graphene.Mutation):
 
     def mutate(self, info, username, email, password1, password2):
         if password1 == password2:
+            if User.objects.filter(email=email).exists():
+                raise GraphQLError(message='User with this email already exists')
+            if User.objects.filter(username=username).exists():
+                raise GraphQLError(message='User with this username already exists')
             user = User.objects.create(email=email, username=username)
             user.set_password(password1)
+            user.save()
             return RegisterMutation(success=True)
         else:
             raise ValidationError('Passwords do not match')
