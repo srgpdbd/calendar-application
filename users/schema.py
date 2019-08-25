@@ -5,6 +5,9 @@ from graphql.error import GraphQLError
 import graphene
 import graphql_jwt
 
+from calendars.models import Calendar
+from calendars.consts import DEFAULT_CALENDAR_NAME
+
 
 class AuthMutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
@@ -44,6 +47,7 @@ class RegisterMutation(graphene.Mutation):
             user = User.objects.create(email=email, username=username)
             user.set_password(password1)
             user.save()
+            Calendar.objects.create(user=user, name=DEFAULT_CALENDAR_NAME)
             return RegisterMutation(success=True)
         else:
             raise ValidationError('Passwords do not match')

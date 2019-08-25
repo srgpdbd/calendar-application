@@ -2,22 +2,35 @@ from django.conf import settings
 import graphene
 from graphene_django.debug import DjangoDebug
 
-from todo.schema import ToDoQuery
+from todo.schema import ToDoQuery, ToDoMutation
+from labels.schema import LabelQuery
+from calendars.schema import CalendarQuery, CalendarMutation
 from users.schema import UsersQuery, AuthMutation, RegisterObjectsType
 
 
-class RootQuery(ToDoQuery, UsersQuery, graphene.ObjectType):
+QUERIES = (
+    ToDoQuery,
+    CalendarQuery,
+    UsersQuery,
+    LabelQuery,
+)
+
+MUTATIONS = (
+    AuthMutation,
+    RegisterObjectsType,
+    CalendarMutation,
+    ToDoMutation,
+)
+
+
+class RootQuery(*QUERIES, graphene.ObjectType):
     if settings.DEBUG:
         # Debug output - see
         # http://docs.graphene-python.org/projects/django/en/latest/debug/
         debug = graphene.Field(DjangoDebug, name='__debug')
 
 
-class RootMutation(
-    AuthMutation,
-    RegisterObjectsType,
-    graphene.ObjectType,
-):
+class RootMutation(*MUTATIONS, graphene.ObjectType):
     pass
 
 

@@ -4,7 +4,7 @@ from django.utils import timezone
 from core.models.managers import NotDeletedManager, ObjectsWithSoftDeleteManager
 
 
-class SoftDeleteMixin(models.Model):
+class SoftDeleteModel(models.Model):
     """Mix soft deletion from base"""
 
     deleted_at = models.DateTimeField(blank=True, null=True)
