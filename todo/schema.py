@@ -1,3 +1,5 @@
+from datetime import datetime, time
+from django.utils.timezone import make_aware
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import login_required
 import graphene
@@ -5,7 +7,6 @@ import graphene
 from todo.models import ToDo
 from calendars.models import Calendar
 from labels.schema import LabelType
-from labels.models import Label
 
 
 class ToDoObjectType(DjangoObjectType):
@@ -22,11 +23,20 @@ class ToDoObjectType(DjangoObjectType):
 
 class ToDoQuery(graphene.ObjectType):
 
-    todos = graphene.List(ToDoObjectType, calendar_id=graphene.Int())
+    todos = graphene.List(ToDoObjectType, calendar_id=graphene.Int(), date=graphene.Date(required=False))
 
     @login_required
-    def resolve_todos(self, info, calendar_id):
-        return ToDo.objects.filter(calendar__id=calendar_id, calendar__user=info.context.user)
+    def resolve_todos(self, info, calendar_id, date=None):
+        query = {
+            'calendar__id': calendar_id,
+            'calendar__user': info.context.user,
+        }
+        if date:
+            query['date__range'] = (
+                make_aware(datetime.combine(date, time.min)),
+                make_aware(datetime.combine(date, time.max))
+            )
+        return ToDo.objects.filter(**query).order_by('done')
 
 
 class CreateToDoMutation(graphene.Mutation):
@@ -43,19 +53,39 @@ class CreateToDoMutation(graphene.Mutation):
     @staticmethod
     @login_required
     def mutate(todo, info, title, calendar_id, description=None, date=None, label_id=None):
-        label = Label.objects.get(id=label_id)
         calendar = Calendar.objects.get(id=calendar_id, user=info.context.user)
         new_todo = ToDo.objects.create(
             calendar=calendar,
             title=title,
             description=description,
             date=date,
-            label=label,
-            # description=description,
-            # label_id=label_id,
+            label_id=label_id,
         )
         return CreateToDoMutation(todo=new_todo)
 
 
+class UpdateToDoMutation(graphene.Mutation):
+
+    class Arguments:
+        todo_id = graphene.Int()
+        title = graphene.String()
+        description = graphene.String()
+        date = graphene.DateTime()
+        label_id = graphene.Int()
+        done = graphene.Boolean()
+
+    todo = graphene.Field(ToDoObjectType)
+
+    @staticmethod
+    @login_required
+    def mutate(todo, info, todo_id, **kwargs):
+        updated_todo = ToDo.objects.get(id=todo_id)
+        for key, value in kwargs.items():
+            setattr(updated_todo, key, value)
+        updated_todo.save()
+        return CreateToDoMutation(todo=updated_todo)
+
+
 class ToDoMutation(graphene.ObjectType):
     create_todo = CreateToDoMutation.Field()
+    update_todo = UpdateToDoMutation.Field()
