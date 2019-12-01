@@ -25,8 +25,6 @@ MUTATIONS = (
 
 class RootQuery(*QUERIES, graphene.ObjectType):
     if settings.DEBUG:
-        # Debug output - see
-        # http://docs.graphene-python.org/projects/django/en/latest/debug/
         debug = graphene.Field(DjangoDebug, name='__debug')
 
 

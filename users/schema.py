@@ -1,6 +1,5 @@
 from graphene_django import DjangoObjectType
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from graphql.error import GraphQLError
 import graphene
 import graphql_jwt
@@ -50,7 +49,7 @@ class RegisterMutation(graphene.Mutation):
             Calendar.objects.create(user=user, name=DEFAULT_CALENDAR_NAME)
             return RegisterMutation(success=True)
         else:
-            raise ValidationError('Passwords do not match')
+            raise GraphQLError(message='Passwords do not match')
 
 
 class RegisterObjectsType(graphene.ObjectType):

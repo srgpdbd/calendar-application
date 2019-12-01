@@ -163,3 +163,5 @@ GRAPHQL_JWT = {
     'JWT_EXPIRATION_DELTA': timedelta(minutes=60),
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
+
+CORS_ORIGIN_ALLOW_ALL = True

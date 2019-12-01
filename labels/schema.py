@@ -17,5 +17,5 @@ class LabelQuery(graphene.ObjectType):
 
     @login_required
     def resolve_labels(self, info):
-        # TODO: here will be not all labels, but labels for specific user
+        # TODO: in the next version here will be not all labels, but labels for specific user
         return Label.objects.all()

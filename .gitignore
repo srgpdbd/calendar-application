@@ -4,3 +4,4 @@ settings_local.py
 .coverage
 .idea
 __pycache__
+htmlcov
