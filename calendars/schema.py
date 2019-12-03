@@ -1,8 +1,10 @@
 from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import login_required
 import graphene
+from graphql.error import GraphQLError
 
 from calendars.models import Calendar
+from core.error_messages import EMPTY_CALENDAR_NAME
 
 
 class CalendarObjectType(DjangoObjectType):
@@ -29,6 +31,8 @@ class CreateCalendarMutation(graphene.Mutation):
 
     @login_required
     def mutate(self, info, name):
+        if not len(name):
+            raise GraphQLError(EMPTY_CALENDAR_NAME)
         new_calendar = Calendar.objects.create(user=info.context.user, name=name)
         return CreateCalendarMutation(calendar=new_calendar)
 

@@ -1,12 +1,15 @@
 from datetime import datetime, time
 from django.utils.timezone import make_aware
 from graphene_django import DjangoObjectType
+from graphql.error import GraphQLError
 from graphql_jwt.decorators import login_required
 import graphene
 
 from todo.models import ToDo
 from calendars.models import Calendar
 from labels.schema import LabelType
+from labels.models import Label
+from core.error_messages import LABEL_DOES_NOT_EXISTS
 
 
 class ToDoObjectType(DjangoObjectType):
@@ -54,12 +57,18 @@ class CreateToDoMutation(graphene.Mutation):
     @login_required
     def mutate(todo, info, title, calendar_id, description=None, date=None, label_id=None):
         calendar = Calendar.objects.get(id=calendar_id, user=info.context.user)
+
+        try:
+            label = Label.objects.get(id=label_id) if label_id else None
+        except Label.DoesNotExist:
+            raise GraphQLError(LABEL_DOES_NOT_EXISTS)
+
         new_todo = ToDo.objects.create(
             calendar=calendar,
             title=title,
             description=description,
             date=date,
-            label_id=label_id,
+            label=label,
         )
         return CreateToDoMutation(todo=new_todo)
 
