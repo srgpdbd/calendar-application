@@ -21,6 +21,7 @@ django-rest-swagger = "*"
 django-graphene-permissions = "*"
 django-graphql-jwt = "*"
 graphene-django = ">=2.0"
+faker = "*"
 
 [requires]
 python_version = "3.7"
